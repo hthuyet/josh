@@ -27,17 +27,18 @@ Edit a booktest
         <div class="col-lg-12">
             <div class="panel panel-primary ">
                 <div class="panel-heading">
-                    <h4 class="panel-title"> <i class="livicon" data-name="edit" data-size="16" data-loop="true" data-c="#fff" data-hc="white"></i>
+                    <h4 class="panel-title"> 
+                        <i class="livicon" data-name="edit" data-size="16" data-loop="true" data-c="#fff" data-hc="white"></i>
                         Edit booktest
                     </h4>
                 </div>
                 <div class="panel-body">
-                     @if ($errors->any())
-                        <ul class="alert alert-danger">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+                    @if ($errors->any())
+                    <ul class="alert alert-danger">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                     @endif
 
                     {!! Form::model($booktest, ['method' => 'PATCH', 'action' => ['BooktestsController@update', $booktest->id]]) !!}
@@ -47,17 +48,17 @@ Edit a booktest
                         {!! Form::text('title', null, ['class' => 'form-control']) !!}
                     </div>
 
-					<div class="form-group">
+                    <div class="form-group">
                         {!! Form::label('author', 'Author: ') !!}
                         {!! Form::text('author', null, ['class' => 'form-control']) !!}
                     </div>
 
-					<div class="form-group">
+                    <div class="form-group">
                         {!! Form::label('description', 'Description: ') !!}
                         {!! Form::textarea('description', null, ['class' => 'form-control']) !!}
                     </div>
 
-					
+
 
                     <div class="form-group">
                         {!! Form::submit('Update', ['class' => 'btn btn-primary form-control']) !!}
