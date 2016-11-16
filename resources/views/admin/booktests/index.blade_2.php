@@ -132,6 +132,8 @@ booktests List
     function addLiviconCss() {
         $('.myInfo').addLivicon({
             name: "info",
+//            title: '{!! trans("book/form.showTitle") !!}',
+            title: 'aaaaaaaa',
             size: 18,
             color: "#428BCA",
             hovercolor: "#428BCA",
@@ -182,21 +184,15 @@ booktests List
                 headerOffset: $('#fixed').height()
             },
             "language": {
-                "lengthMenu": "{!! trans('dataTable.lengthMenu1') !!}" + "_MENU_" + "{!! trans('dataTable.lengthMenu2') !!}",
-                "zeroRecords": "{!! trans('dataTable.zeroRecords') !!}",
-                "info": "{!! trans('dataTable.info1') !!}" + " _START_" + "{!! trans('dataTable.info2') !!}" + "_END_"
-                        + "{!! trans('dataTable.info3') !!}" + "_MAX_" + "{!! trans('dataTable.info4') !!}",
-                "infoEmpty": "{!! trans('dataTable.infoEmpty') !!}",
+                "lengthMenu": "{!! trans('message.lengthMenu1') !!}" + "_MENU_" + "{!! trans('message.lengthMenu2') !!}",
+                "zeroRecords": "{!! trans('message.zeroRecords') !!}",
+                "info": "{!! trans('message.info1') !!}" + " _START_" + "{!! trans('message.info2') !!}" + "_END_"
+                        + "{!! trans('message.info3') !!}" + "_MAX_" + "{!! trans('message.info4') !!}",
+                "infoEmpty": "{!! trans('message.infoEmpty') !!}",
                 "infoFiltered": "(filtered from _MAX_ total records)",
-                "search": "{!! trans('dataTable.search') !!}",
+                "search": "{!! trans('message.search') !!}",
                 "decimal": ",",
-                "thousands": ".",
-                "paginate": {
-                    "first": "{!! trans('dataTable.paginate.first') !!}",
-                    "last": "{!! trans('dataTable.paginate.last') !!}",
-                    "next": "{!! trans('dataTable.paginate.next') !!}",
-                    "previous": "{!! trans('dataTable.paginate.previous') !!}",
-                },
+                "thousands": "."
             },
             ajax: {
                 url: "{{ route('admin.booktests.getAjax') }}",
@@ -226,30 +222,39 @@ booktests List
                         return "<center>" + data + "</center>";
                     },
                 }, {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        var obj = 'data-obj=\'' + JSON.stringify(row).replace(/'/g, "\\'") + "'";
-                        return '<a href="#" title=\"{!! trans("book/form.showTitle") !!}\" onclick=\'editBook(this,"0")\' ' + obj + '>' + data + "</a>";
-                    },
-                }, {
                     "targets": -1,
                     "render": function (data, type, row) {
                         var obj = 'data-obj=\'' + JSON.stringify(row).replace(/'/g, "\\'") + "'";
                         var taction = "";
                         taction += '<a onclick=\'editBook(this,"0")\' ' + obj + '>';
-                        taction += '<i class="myInfo" title=\"{!! trans("book/form.showTitle") !!}\",></i>';
+                        taction += '<i class="myInfo"></i>';
                         taction += "</a>";
 
                         taction += '<a onclick=\'editBook(this,"1")\' ' + obj + '>';
-                        taction += '<i class="myEdit" title=\"{!! trans("book/form.editTitle") !!}\",></i>';
+                        taction += '<i class="myEdit"></i>';
                         taction += "</a>";
 
                         taction += '<a onclick=\'deleteBook(this)\' ' + obj + '>';
-                        taction += '<i class="myDelete" title=\"{!! trans("book/form.deleteTitle") !!}\",></i>';
+                        taction += '<i class="myDelete"></i>';
                         taction += "</a>";
                         return "<center>" + taction + "</center>";
                     },
-                }], "drawCallback": function (settings) {
+                }],
+            "createdRow": function (row, data, index) {
+                if (data.RentalOID) {
+                    var toDate = new Date(data.ToDate);
+                    if (toDate > currentDate) {
+//                    console.log(currentDate + " + " + toDate + (currentDate > toDate));
+                        if ((maxDate >= toDate)) {
+                            $('td', row).addClass('freein');
+                        } else {
+                            $('td', row).addClass('booked');
+                        }
+                    }
+                } else {
+                    $('td', row).addClass('free');
+                }
+            }, "drawCallback": function (settings) {
                 addLiviconCss();
             }, "initComplete": function (settings, json) {
 

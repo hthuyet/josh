@@ -25,5 +25,12 @@ return array(
     'error' => array(
         'item_exists' => 'An Item already exists with that name, names must be unique for Items.',
     ),
-
+    //Message
+    'info' => 'INFO',
+    'warning' => 'WARNING',
+    'error' => 'ERROR',
+    'success' => 'SUCCESS',
+    
+    //Chung
+    'actions' => 'Actions',
 );

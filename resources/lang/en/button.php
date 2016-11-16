@@ -12,6 +12,7 @@ return array(
     'save'	  			=> 'Save',
     'submit'	  		=> 'Submit',
     'cancel'  			=> 'Cancel',
+    'close'  			=> 'Close',
     'create'  			=> 'Create',
     'back'    			=> 'Back',
     'signin'  			=> 'Sign in',

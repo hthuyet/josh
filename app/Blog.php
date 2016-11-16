@@ -2,44 +2,51 @@
 
 namespace App;
 
-use Cviebrock\EloquentSluggable\SluggableInterface;
-use Cviebrock\EloquentSluggable\SluggableTrait;
-use Cviebrock\EloquentTaggable\Contracts\Taggable;
-use Cviebrock\EloquentTaggable\Traits\Taggable as TaggableImpl;
+use Cviebrock\EloquentSluggable\Sluggable;
+use Cviebrock\EloquentTaggable\Taggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Blog extends Model implements SluggableInterface, Taggable {
+class Blog extends Model {
 
     use SoftDeletes;
-    use SluggableTrait;
-    use TaggableImpl;
+
+use Taggable;
+
+use Sluggable;
 
     protected $dates = ['deleted_at'];
-
     protected $sluggable = [
         'build_from' => 'title',
-        'save_to'    => 'slug',
+        'save_to' => 'slug',
     ];
-
     protected $table = 'blogs';
-
     protected $guarded = ['id'];
 
-    public function comments()
-    {
+    public function comments() {
         return $this->hasMany('App\BlogComment');
     }
-    public function category()
-    {
+
+    public function category() {
         return $this->belongsTo('App\BlogCategory');
     }
-    public function author()
-    {
+
+    public function author() {
         return $this->belongsTo('App\User', 'user_id');
     }
-    public function getBlogcategoryAttribute()
-    {
+
+    public function getBlogcategoryAttribute() {
         return $this->category->lists('id');
     }
+
+    public function sluggable() {
+        return [
+            'slug' => [
+                'source' => 'title',
+                'separator' => '-',
+                'includeTrashed' => true,
+            ]
+        ];
+    }
+
 }

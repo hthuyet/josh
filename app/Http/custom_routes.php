@@ -11,6 +11,7 @@ Route::group(['middleware' => ['web']], function () {
         Route::resource('booktests', 'BooktestsController');
         Route::get('booktests/{id}/delete', array('as' => 'admin.booktests.delete', 'uses' => 'BooktestsController@getDelete'));
         Route::get('booktests/{id}/confirm-delete', array('as' => 'admin.booktests.confirm-delete', 'uses' => 'BooktestsController@getModalDelete'));
+        Route::any('booktests/getAjax', array('as' => 'admin.booktests.getAjax', 'uses' => 'BooktestsController@getAjax'));
         Route::post('booktests/detail', array('as' => 'admin.booktests.detail', 'uses' => 'BooktestsController@getDetail'));
         Route::post('booktests/saveBook', array('as' => 'admin.booktests.saveBook', 'uses' => 'BooktestsController@saveBook'));
     });

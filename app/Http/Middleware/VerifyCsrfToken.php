@@ -21,6 +21,9 @@ class VerifyCsrfToken extends BaseVerifier {
         if (Str::startsWith($request->getRequestUri(), '/admin/booktests/detail')) {
             return $next($request);
         }
+        if (Str::startsWith($request->getRequestUri(), '/admin/booktests/getAjax')) {
+            return $next($request);
+        }
         return parent::handle($request, $next);
     }
 

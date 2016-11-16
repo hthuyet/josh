@@ -12,24 +12,21 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Response;
 use Sentinel;
 
-
-class BlogController extends JoshController
-{
-
+class BlogController extends JoshController {
 
     private $tags;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
-        $this->tags = Blog::tagArray();
+        $service = app(\Cviebrock\EloquentTaggable\Services\TagService::class);
+        $this->tags = $service->getAllTags(\App\Blog::class);
+//        $this->tags = Blog::tagArray();
     }
 
     /**
      * @return \Illuminate\View\View
      */
-    public function getIndexFrontend()
-    {
+    public function getIndexFrontend() {
         // Grab all the blogs
         $blogs = Blog::latest()->simplePaginate(5);
         $blogs->setPath('blog');
@@ -42,28 +39,26 @@ class BlogController extends JoshController
      * @param string $slug
      * @return \Illuminate\View\View
      */
-    public function getBlogFrontend($slug = '')
-    {
+    public function getBlogFrontend($slug = '') {
         if ($slug == '') {
             $blog = Blog::first();
         }
         try {
-            $blog = Blog::findBySlugOrIdOrFail($slug);
+//            $blog = Blog::findBySlugOrIdOrFail($slug);
+            $blog = Blog::where('slug', $slug)->first() ?: Blog::findOrFail((int)$slug);
             $blog->increment('views');
         } catch (ModelNotFoundException $e) {
             return Response::view('404', array(), 404);
         }
         // Show the page
         return View('blogitem', compact('blog'));
-
     }
 
     /**
      * @param $tag
      * @return \Illuminate\View\View
      */
-    public function getBlogTagFrontend($tag)
-    {
+    public function getBlogTagFrontend($tag) {
         $blogs = Blog::withAnyTags($tag)->simplePaginate(5);
         $blogs->setPath('blog/' . $tag . '/tag');
         $tags = $this->tags;
@@ -75,8 +70,7 @@ class BlogController extends JoshController
      * @param Blog $blog
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function storeCommentFrontend(BlogCommentRequest $request, Blog $blog)
-    {
+    public function storeCommentFrontend(BlogCommentRequest $request, Blog $blog) {
         $blogcooment = new BlogComment($request->all());
         $blogcooment->blog_id = $blog->id;
         $blogcooment->save();
@@ -89,8 +83,7 @@ class BlogController extends JoshController
      *
      * @return Response
      */
-    public function index()
-    {
+    public function index() {
         // Grab all the blogs
         $blogs = Blog::all();
         // Show the page
@@ -102,8 +95,7 @@ class BlogController extends JoshController
      *
      * @return Response
      */
-    public function create()
-    {
+    public function create() {
         $blogcategory = BlogCategory::lists('title', 'id');
         return view('admin.blog.create', compact('blogcategory'));
     }
@@ -113,14 +105,13 @@ class BlogController extends JoshController
      *
      * @return Response
      */
-    public function store(BlogRequest $request)
-    {
+    public function store(BlogRequest $request) {
         $blog = new Blog($request->except('image', 'tags'));
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension() ?: 'png';
+            $extension = $file->getClientOriginalExtension() ? : 'png';
             $folderName = '/uploads/blog/';
             $picture = str_random(10) . '.' . $extension;
             $blog->image = $picture;
@@ -140,7 +131,6 @@ class BlogController extends JoshController
         } else {
             return Redirect::route('admin/blog')->withInput()->with('error', trans('blog/message.error.create'));
         }
-
     }
 
     /**
@@ -149,8 +139,7 @@ class BlogController extends JoshController
      * @param  Blog $blog
      * @return view
      */
-    public function show(Blog $blog)
-    {
+    public function show(Blog $blog) {
         $comments = BlogComment::all();
         return view('admin.blog.show', compact('blog', 'comments', 'tags'));
     }
@@ -161,8 +150,7 @@ class BlogController extends JoshController
      * @param  Blog $blog
      * @return view
      */
-    public function edit(Blog $blog)
-    {
+    public function edit(Blog $blog) {
         $blogcategory = BlogCategory::lists('title', 'id');
         return view('admin.blog.edit', compact('blog', 'blogcategory'));
     }
@@ -173,12 +161,11 @@ class BlogController extends JoshController
      * @param  int $id
      * @return Response
      */
-    public function update(BlogRequest $request, Blog $blog)
-    {
+    public function update(BlogRequest $request, Blog $blog) {
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension() ?: 'png';
+            $extension = $file->getClientOriginalExtension() ? : 'png';
             $folderName = '/uploads/blog/';
             $picture = str_random(10) . '.' . $extension;
             $blog->image = $picture;
@@ -203,8 +190,7 @@ class BlogController extends JoshController
      * @param $website
      * @return Response
      */
-    public function getModalDelete(Blog $blog)
-    {
+    public function getModalDelete(Blog $blog) {
         $model = 'blog';
         $confirm_route = $error = null;
         try {
@@ -223,8 +209,7 @@ class BlogController extends JoshController
      * @param  int $id
      * @return Response
      */
-    public function destroy(Blog $blog)
-    {
+    public function destroy(Blog $blog) {
 
         if ($blog->delete()) {
             return redirect('admin/blog')->with('success', trans('blog/message.success.delete'));
@@ -238,12 +223,12 @@ class BlogController extends JoshController
      *
      * @return Response
      */
-    public function storecomment(BlogCommentRequest $request, Blog $blog)
-    {
+    public function storecomment(BlogCommentRequest $request, Blog $blog) {
         $blogcooment = new BlogComment($request->all());
         $blogcooment->blog_id = $blog->id;
         $blogcooment->save();
 
         return redirect('admin/blog/' . $blog->id . '/show');
     }
+
 }

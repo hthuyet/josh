@@ -5,9 +5,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title"> 
+                <h4 class="modal-title" id="titleModalBook"> 
                     <i class="livicon" data-name="edit" data-size="16" data-loop="true" data-c="#fff" data-hc="white"></i>
-                    Edit booktest
                 </h4>
             </div>
             <div class="modal-body">
@@ -24,14 +23,14 @@
                     <input type="hidden" class="form-control" id="idBook" name="id">
                     <div class="col-md-6 display-no" style="display: block;">
                         <div class="form-group ui-draggable-handle" style="position: static;">
-                            <label for="input-text-1">{!! trans('book.title') !!}</label>
+                            <label for="input-text-1">{!! trans('book/form.title') !!}</label>
                             <input type="text" class="form-control" id="titleBook" name="title" placeholder="Enter email">
                             <p class="help-block"></p>
                         </div>
                     </div>
                     <div class="col-md-6 display-no" style="display: block;">
                         <div class="form-group ui-draggable-handle" style="position: static;">
-                            <label for="input-text-1">{!! trans('book.author') !!}</label>
+                            <label for="input-text-1">{!! trans('book/form.author') !!}</label>
                             <input type="text" class="form-control" id="authorBook" name="author"  placeholder="Enter email">
                             <p class="help-block"></p>
                         </div>
@@ -42,7 +41,7 @@
 
                     <div class="col-md-12 display-no" style="display: block;">
                         <div class="form-group ui-draggable-handle" style="position: static;">
-                            <label for="input-text-1">{!! trans('book.description') !!}</label>
+                            <label for="input-text-1">{!! trans('book/form.description') !!}</label>
                             <textarea class="form-control" id="descriptionBook" name="description"  placeholder="Enter email"></textarea>
                             <p class="help-block"></p>
                         </div>
@@ -51,9 +50,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn">Close</button>
-                <button type="button" class="btn btn-primary" onclick="saveBook()">Save changes</button>
-                {!! Form::submit('Save changes2', ['class' => 'btn btn-primary']) !!}
+                <button id="btnSaveBook" type="button" class="btn btn-primary" onclick="saveBook()">{!! trans('button.save') !!}</button>
+                <button type="button" data-dismiss="modal" class="btn">{!! trans('button.close') !!}</button>
             </div>
         </div>
     </div>
@@ -82,6 +80,7 @@
                 }
                 $('#bookModal').modal('hide');
                 alertNotifications("success", response.success);
+                $('#table').DataTable().ajax.reload();
             }, error: function (response) {
                 if (response.responseJSON) {
                     $("#error").html(response.responseJSON.error);

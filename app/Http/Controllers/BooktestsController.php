@@ -8,6 +8,7 @@ use App\Booktest;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Lang;
+use App;
 
 class BooktestsController extends Controller {
 
@@ -17,6 +18,7 @@ class BooktestsController extends Controller {
      * @return Response
      */
     public function index() {
+        App::setLocale("en");
         $booktests = Booktest::latest()->get();
         return view('admin.booktests.index', compact('booktests'));
     }
@@ -105,6 +107,8 @@ class BooktestsController extends Controller {
         // Redirect to the group management page
         return redirect('admin/booktests')->with('success', Lang::get('message.success.delete'));
     }
+    
+    //Add by thuyetlv
 
     public function getDetail(Request $request) {
         try {
@@ -132,6 +136,42 @@ class BooktestsController extends Controller {
                 $success = Lang::get('message.success.update');
             }
             return response()->json(compact('booktest', 'success'));
+        } catch (Exception $ex) {
+            Log::error($ex);
+            return response()->json(['error' => trans('messages.systemError')], 411);
+        }
+    }
+    public function getAjax(Request $request) {
+        try {
+            $search = $request->get("search");
+            $order = $request->get("order");
+            $limit = $request->get("limit");
+            if ($search && isset($search["value"]) && $search["value"]) {
+                $search = $search["value"];
+            } else {
+                $search = "";
+            }
+            if ($order && isset($order["0"]) && $order["0"]) {
+                $column = $order["0"]["column"];
+                $dir = $order["0"]["dir"];
+                
+                if($column == 0){
+                    $column = "id";
+                }else if($column == 1){
+                    $column = "title";
+                }else if($column == 2){
+                    $column = "author";
+                }else if($column == 3){
+                    $column = "description";
+                }
+            }
+            $books = Booktest::findByPaging($search, $column, $dir, $limit);
+
+            $rtn = array(
+                "total" => $books->total(),
+                "data" => $books->items(),
+            );
+            return response()->json(compact('rtn'));
         } catch (Exception $ex) {
             Log::error($ex);
             return response()->json(['error' => trans('messages.systemError')], 411);
