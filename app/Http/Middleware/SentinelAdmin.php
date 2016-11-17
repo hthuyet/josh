@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Sentinel;
 use Redirect;
+use Session;
 
 class SentinelAdmin
 {
@@ -17,9 +18,16 @@ class SentinelAdmin
      */
     public function handle($request, Closure $next)
     {
-        if(!Sentinel::check())
+        $method = $request->method();
+        
+        $route = $request->route();
+        if(!Sentinel::check()){
+            if($method == "GET" || $method == "get"){
+                Session::put('route', $route->getName());
+                Session::put('parameters', $route->parameters());
+            }
             return Redirect::to('admin/signin')->with('error', 'You must be logged in!');
-        elseif(!Sentinel::inRole('admin'))
+        }elseif(!Sentinel::inRole('admin'))
             return Redirect::to('my-account');
 
         return $next($request);

@@ -76,9 +76,7 @@ booktests List
         });
     }
     function editBook(item, type) {
-        console.log($(item).data("obj"));
         var obj = $(item).data("obj");
-        console.log(obj);
         $("#idBook").val(obj.id);
         $("#titleBook").val(obj.title);
         $("#authorBook").val(obj.author);
@@ -105,8 +103,6 @@ booktests List
 </script>
 @stop
 
-@include('admin.booktests.modal')
-
 {{-- Body Bottom confirm modal --}}
 @section('footer_scripts')
 <div class="modal fade" id="delete_confirm" tabindex="-1" role="dialog" aria-labelledby="user_delete_confirm_title" aria-hidden="true">
@@ -128,6 +124,12 @@ booktests List
 <script type="text/javascript" src="{{ asset('assets/vendors/datatables/js/jquery.dataTables.js') }}" ></script>
 <script type="text/javascript" src="{{ asset('assets/vendors/datatables/js/dataTables.bootstrap.js') }}" ></script>
 <script type="text/javascript" src="{{ asset('assets/vendors/datatables/js/dataTables.responsive.js') }}" ></script>
+
+<script src="{{ asset('assets/vendors/moment/js/moment.min.js') }}" ></script>
+<script src="{{ asset('assets/vendors/jasny-bootstrap/js/jasny-bootstrap.js') }}"  type="text/javascript"></script>
+<script src="{{ asset('assets/vendors/select2/js/select2.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/vendors/bootstrapwizard/jquery.bootstrap.wizard.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/vendors/bootstrapvalidator/js/bootstrapValidator.min.js') }}" type="text/javascript"></script>
 <script>
     function addLiviconCss() {
         $('.myInfo').addLivicon({
@@ -170,7 +172,6 @@ booktests List
         });
     }
     function initDataTable() {
-        console.log("-----initDataTable----");
         var table = $('#table').DataTable({
             responsive: true,
             "lengthMenu": [[10, 25, 50], [10, 25, 50]],
@@ -189,6 +190,7 @@ booktests List
                 "infoEmpty": "{!! trans('dataTable.infoEmpty') !!}",
                 "infoFiltered": "(filtered from _MAX_ total records)",
                 "search": "{!! trans('dataTable.search') !!}",
+                "processing": "{!! trans('dataTable.processing') !!}",
                 "decimal": ",",
                 "thousands": ".",
                 "paginate": {
@@ -198,6 +200,7 @@ booktests List
                     "previous": "{!! trans('dataTable.paginate.previous') !!}",
                 },
             },
+            "order": [[ 0, "desc" ]],
             ajax: {
                 url: "{{ route('admin.booktests.getAjax') }}",
                 method: "POST",
@@ -261,4 +264,6 @@ booktests List
         initDataTable();
     });
 </script>
+@include('admin.booktests.modal')
 @stop
+

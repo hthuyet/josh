@@ -23,14 +23,14 @@
                     <input type="hidden" class="form-control" id="idBook" name="id">
                     <div class="col-md-6 display-no" style="display: block;">
                         <div class="form-group ui-draggable-handle" style="position: static;">
-                            <label for="input-text-1">{!! trans('book/form.title') !!}</label>
+                            <label for="title">{!! trans('book/form.title') !!}</label>
                             <input type="text" class="form-control" id="titleBook" name="title" placeholder="Enter email">
                             <p class="help-block"></p>
                         </div>
                     </div>
                     <div class="col-md-6 display-no" style="display: block;">
                         <div class="form-group ui-draggable-handle" style="position: static;">
-                            <label for="input-text-1">{!! trans('book/form.author') !!}</label>
+                            <label for="author">{!! trans('book/form.author') !!}</label>
                             <input type="text" class="form-control" id="authorBook" name="author"  placeholder="Enter email">
                             <p class="help-block"></p>
                         </div>
@@ -41,7 +41,7 @@
 
                     <div class="col-md-12 display-no" style="display: block;">
                         <div class="form-group ui-draggable-handle" style="position: static;">
-                            <label for="input-text-1">{!! trans('book/form.description') !!}</label>
+                            <label for="description">{!! trans('book/form.description') !!}</label>
                             <textarea class="form-control" id="descriptionBook" name="description"  placeholder="Enter email"></textarea>
                             <p class="help-block"></p>
                         </div>
@@ -50,7 +50,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="btnSaveBook" type="button" class="btn btn-primary" onclick="saveBook()">{!! trans('button.save') !!}</button>
+                <button id="btnSaveBook" type="button" class="btn btn-primary ladda-button" 
+                        data-style="expand-left" onclick="saveBook()">{!! trans('button.save') !!}</button>
                 <button type="button" data-dismiss="modal" class="btn">{!! trans('button.close') !!}</button>
             </div>
         </div>
@@ -59,7 +60,18 @@
 {!! Form::close() !!}
 
 <script type="text/javascript">
-    function saveBook() {
+    $('#bookForm').on('show.bs.modal', function () {
+        $('#bookForm').bootstrapValidator('resetForm', true);
+    });
+    $('#btnSaveBook').click(function (e) {
+        e.preventDefault();
+        var $validator = $('#bookForm').data('bootstrapValidator').validate();
+        if (!$validator.isValid()) {
+            return false;
+        }
+        var l = Ladda.create(this);
+        l.start();
+        
         var data = {
             _token: $("#csrf-token").val(),
             id: $("#idBook").val(),
@@ -72,6 +84,7 @@
             url: "{{ route('admin.booktests.saveBook') }}",
             data: data,
             success: function (response) {
+                l.stop();
                 console.log(response);
                 if (response.error) {
                     //Co loi
@@ -82,6 +95,7 @@
                 alertNotifications("success", response.success);
                 $('#table').DataTable().ajax.reload();
             }, error: function (response) {
+                l.stop();
                 if (response.responseJSON) {
                     $("#error").html(response.responseJSON.error);
                 }
@@ -108,5 +122,45 @@
 ////            }, 'json');
 ////            return false;
 //        });
+    });
+
+    var messageRequired = '{{ trans("validation.required",[":attribute" => ":attribute"]) }}';
+    function initValidator() {
+        $("#bookForm").bootstrapValidator({
+            fields: {
+                title: {
+                    validators: {
+                        notEmpty: {
+                            message: messageRequired.replace(':attribute', '{!! trans("book/form.title") !!}')
+                        }
+                    },
+                    required: true,
+                    rangelength: [6, 16],
+                },
+                author: {
+                    validators: {
+                        notEmpty: {
+                            message: messageRequired.replace(':attribute', '{!! trans("book/form.author") !!}')
+                        }
+                    },
+                    required: true,
+                    minlength: 3
+                },
+                description: {
+                    validators: {
+                        notEmpty: {
+                            message: messageRequired.replace(':attribute', '{!! trans("book/form.description") !!}')
+                        }
+                    },
+                    required: true,
+                    minlength: 4
+                },
+            }
+        });
     }
+
+    $(document).ready(function () {
+        initValidator();
+    });
 </script>
+

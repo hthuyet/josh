@@ -13,6 +13,7 @@ use Sentinel;
 use URL;
 use Validator;
 use View;
+use Session;
 
 class AuthController extends JoshController {
 
@@ -40,7 +41,7 @@ class AuthController extends JoshController {
 
         try {
             $email = $request->get("email");
-            
+
             if (strpos($email, "@") !== false) {
                 //Login bang email
                 $credentials = $request->only('email', 'password');
@@ -52,11 +53,21 @@ class AuthController extends JoshController {
                     "password" => $request->get("password"));
 //                $appuser = AppUser::getByUsername($email);
             }
-            
+
             // Try to log the user in
             if (Sentinel::authenticate($credentials, $request->get('remember-me', false))) {
                 // Redirect to the dashboard page
-                return Redirect::route("dashboard")->with('success', Lang::get('auth/message.signin.success'));
+                if (Session::get('route')) {
+                    $route = Session::get('route');
+                    $parameters = Session::get('parameters');
+
+                    Session::forget('route');
+                    Session::forget('parameters');
+
+                    return Redirect::route("$route")->with($parameters);
+                } else {
+                    return Redirect::route("dashboard")->with('success', Lang::get('auth/message.signin.success'));
+                }
             }
 
             $this->messageBag->add('email', Lang::get('auth/message.account_not_found'));
@@ -81,6 +92,7 @@ class AuthController extends JoshController {
         $rules = array(
             'first_name' => 'required|min:3',
             'last_name' => 'required|min:3',
+            'username' => 'required|min:4',
             'email' => 'required|email|unique:users',
             'email_confirm' => 'required|email|same:email',
             'password' => 'required|between:3,32',
@@ -97,11 +109,14 @@ class AuthController extends JoshController {
         }
 
         try {
+            //Add by thuyetlv
+            $username = $request->get('username');
             // Register the user
             $user = Sentinel::registerAndActivate(array(
                         'first_name' => $request->get('first_name'),
                         'last_name' => $request->get('last_name'),
                         'email' => $request->get('email'),
+                        'username' => strtolower(trim($username)),
                         'password' => $request->get('password'),
             ));
 

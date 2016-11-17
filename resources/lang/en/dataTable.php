@@ -43,5 +43,5 @@ return array(
     'paginate.last' => 'Last',
     'paginate.next' => 'Next',
     'paginate.previous' => 'Previous',
-
+    "processing" =>     "Processing...",
 );

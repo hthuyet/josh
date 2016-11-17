@@ -19,6 +19,7 @@
 
         <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ asset('assets/css/my.css') }}" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="{{ asset('assets/plugins/ladda/ladda-themeless.min.css') }}">
         <!-- font Awesome -->
 
 
@@ -171,6 +172,8 @@
         </a>
         <!-- global js -->
         <script src="{{ asset('assets/js/app.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('assets/plugins/ladda/spin.min.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('assets/plugins/ladda/ladda.min.js') }}" type="text/javascript"></script>
 
 
         <!-- end of global js -->
