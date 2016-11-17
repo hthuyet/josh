@@ -32,8 +32,6 @@
         <div class="container">
             <div class="row vertical-offset-100">
                 <!-- Notifications -->
-                @include('notifications')
-
                 <div class="col-sm-6 col-sm-offset-3  col-md-5 col-md-offset-4 col-lg-4 col-lg-offset-4">
                     <div id="container_demo">
                         <a class="hiddenanchor" id="toregister"></a>
@@ -41,12 +39,17 @@
                         <a class="hiddenanchor" id="toforgot"></a>
                         <div id="wrapper">
                             <div id="login" class="animate form">
-                                <form id="frmLogin" action="{{ route('signin') }}" autocomplete="on" onsubmit="aaaa()" method="post" role="form">
+                                <form id="frmLogin" action="{{ route('signin') }}" autocomplete="on" method="post" role="form">
                                     <h3 class="black_bg">
                                         <img src="{{ asset('assets/img/logo.png') }}" alt="josh logo">
                                         <br>Log in</h3>
                                     <!-- CSRF Token -->
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                                    <div class="form-group has-error">
+                                        <div class="col-sm-12">
+                                            <center><span class="help-block" id="errorMessage"></span></center>
+                                        </div>
+                                    </div>
 
                                     <div class="form-group {{ $errors->first('email', 'has-error') }}">
                                         <label style="margin-bottom:0px;" for="email" class="uname control-label"> <i class="livicon" data-name="user" data-size="16" data-loop="true" data-c="#3c8dbc" data-hc="#3c8dbc"></i>
@@ -225,8 +228,37 @@
         <script src="{{ asset('assets/plugins/ladda/ladda.min.js') }}" type="text/javascript"></script>
 
         <script type="text/javascript">
-                                    Ladda.bind('button[type=submit]');
-                                    $("#email").focus();
+            Ladda.bind('button[type=submit]');
+            $("#email").focus();
+
+            $(document).ready(function () {
+                $('#frmLogin').on('submit', function (e) { //use on if jQuery 1.7+
+                    e.preventDefault();  //prevent form from submitting
+                    var url = $(this).attr('action');
+                    var data = $("#frmLogin :input").serializeArray();
+
+                    $.ajax({
+                        method: "POST",
+                        url: url,
+                        data: data,
+                        success: function (response) {
+                            Ladda.stopAll();
+                            if (response.redirect) {
+                                window.location.href = response.redirect;
+                            }else{
+                                window.location.href = response.redirect;
+                            }
+                        }, error: function (response) {
+                            Ladda.stopAll();
+                            if (response.responseJSON) {
+                                $("#errorMessage").html(response.responseJSON.errorMess);
+                            }
+                            $("#email").focus();
+                        }
+                    });
+
+                });
+            });
         </script>
         <!-- end of global js -->
     </body>

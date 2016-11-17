@@ -62,6 +62,13 @@
 <script type="text/javascript">
     $('#bookForm').on('show.bs.modal', function () {
         $('#bookForm').bootstrapValidator('resetForm', true);
+//        console.log($(window).height() - $("#bookModal .modal-content").height());
+//        setTimeout(function () {
+//            var aa = $(window).height() - $("#bookModal .modal-content").height();
+//            console.log(aa);
+//            console.log(aa / 3);
+//            $("#bookModal").css({top: aa / 3});
+//        }, 200);
     });
     $('#btnSaveBook').click(function (e) {
         e.preventDefault();
@@ -71,7 +78,7 @@
         }
         var l = Ladda.create(this);
         l.start();
-        
+
         var data = {
             _token: $("#csrf-token").val(),
             id: $("#idBook").val(),

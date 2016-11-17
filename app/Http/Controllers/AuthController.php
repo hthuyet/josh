@@ -64,22 +64,28 @@ class AuthController extends JoshController {
                     Session::forget('route');
                     Session::forget('parameters');
 
-                    return Redirect::route("$route")->with($parameters);
+//                    return Redirect::route("$route")->with($parameters);
+                    return response()->json(['redirect' => route($route,$parameters)]);
                 } else {
-                    return Redirect::route("dashboard")->with('success', Lang::get('auth/message.signin.success'));
+                    return response()->json(['redirect' => route('dashboard')]);
+//                    return Redirect::route("dashboard")->with('success', Lang::get('auth/message.signin.success'));
                 }
             }
 
-            $this->messageBag->add('email', Lang::get('auth/message.account_not_found'));
+//            $this->messageBag->add('email', Lang::get('auth/message.account_not_found'));
+            return response()->json(['errorMess' => Lang::get('auth/message.account_not_found')], 411);
         } catch (NotActivatedException $e) {
-            $this->messageBag->add('email', Lang::get('auth/message.account_not_activated'));
+//            $this->messageBag->add('email', Lang::get('auth/message.account_not_activated'));
+            return response()->json(['errorMess' => Lang::get('auth/message.account_not_activated')], 411);
         } catch (ThrottlingException $e) {
             $delay = $e->getDelay();
-            $this->messageBag->add('email', Lang::get('auth/message.account_suspended', compact('delay')));
+//            $this->messageBag->add('email', Lang::get('auth/message.account_suspended', compact('delay')));
+            return response()->json(['errorMess' => Lang::get('auth/message.account_suspended')], 411);
         }
 
         // Ooops.. something went wrong
-        return back()->withInput()->withErrors($this->messageBag);
+//        return back()->withInput()->withErrors($this->messageBag);
+        return response()->json(['errorMess' => $this->messageBag], 411);
     }
 
     /**
